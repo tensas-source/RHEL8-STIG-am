@@ -16,7 +16,7 @@ rhel8stig_cat3_patch: true
 # We've defined complexity-high to mean that we cannot automatically remediate
 # the rule in question.  In the future this might mean that the remediation
 # may fail in some cases.
-rhel8stig_complexity_high: false
+rhel8stig_complexity_high: true
 
 # Show "changed" for complex items not remediated per complexity-high setting
 # to make them stand out.  "changed" items on a second run of the role would
@@ -26,15 +26,15 @@ rhel8stig_audit_complex: true
 # We've defined disruption-high to indicate items that are likely to cause
 # disruption in a normal workflow.  These items can be remediated automatically
 # but are disabled by default to avoid disruption.
-rhel8stig_disruption_high: false
+rhel8stig_disruption_high: true
 
 # Show "changed" for disruptive items not remediated per disruption-high
 # setting to make them stand out.
-rhel8stig_audit_disruptive: false
+rhel8stig_audit_disruptive: true
 
 rhel8stig_skip_for_travis: false
 
-rhel8stig_workaround_for_disa_benchmark: true
+rhel8stig_workaround_for_disa_benchmark: false
 
 # tweak role to run in a chroot, such as in kickstart %post script
 rhel8stig_system_is_chroot: "{{ ansible_is_chroot | default(False) }}"
@@ -50,22 +50,22 @@ container_vars_file: is_container.yml
 system_is_ec2: false
 
 # Whether to skip the reboot
-rhel8stig_skip_reboot: true
+rhel8stig_skip_reboot: false
 
 # Defined will change if control requires
-change_requires_reboot: false
+change_requires_reboot: true
 
 ###########################################
 ### Goss is required on the remote host ###
 ### vars/auditd.yml for other settings  ###
 
 # Allow audit to setup the requirements including installing git (if option chosen and downloading and adding goss binary to system)
-setup_audit: false
+setup_audit: true
 
 # enable audits to run - this runs the audit and get the latest content
-run_audit: false
+run_audit: true
 # Run heavy tests - some tests can have more impact on a system enabling these can have greater impact on a system
-audit_run_heavy_tests: true
+audit_run_heavy_tests: false
 
 ## Only run Audit do not remediate
 audit_only: false
@@ -84,7 +84,7 @@ get_audit_binary_method: download
 ## if get_audit_binary_method - copy the following needs to be updated for your environment
 ## it is expected that it will be copied from somewhere accessible to the control node
 ## e.g copy from ansible control node to remote host
-audit_bin_copy_location: /some/accessible/path
+audit_bin_copy_location: /usr/local/bin
 
 # how to get audit files onto host options
 # options are git/copy/archive/get_url other e.g. if you wish to run from already downloaded conf
@@ -94,7 +94,7 @@ audit_content: git
 ## Note will work with .tar files - zip will require extra configuration
 ### If using get_url this is expecting github url in tar.gz format e.g.
 ### https://github.com/ansible-lockdown/UBUNTU22-CIS-Audit/archive/refs/heads/benchmark-v1.0.0.tar.gz
-audit_conf_source: "some path or url to copy from"
+audit_conf_source: "https://github.com/ansible-lockdown/RHEL8-STIG-Audit/archive/refs/heads/devel.tar.gz"
 
 # Destination for the audit content to be placed on managed node
 # note may not need full path e.g. /opt with the directory being the {{ benchmark }}-Audit directory
@@ -222,9 +222,9 @@ rhel_08_010580: true
 rhel_08_010590: true
 ## Note Azure is currently default mounting /mnt for cloud-init this will cause issues with these controls
 ## refer to https://github.com/Azure/WALinuxAgent/issues/1971
-rhel_08_010600: true
-rhel_08_010610: true
-rhel_08_010620: true
+rhel_08_010600: false
+rhel_08_010610: false
+rhel_08_010620: false
 ##
 rhel_08_010630: true
 rhel_08_010640: true
@@ -498,7 +498,7 @@ rhel_08_040300: true
 rhel_08_040310: true
 
 # Whether or not to run tasks related to auditing/patching the desktop environment
-rhel8stig_gui: "{{ prelim_gnome_present.stat.exists | default(false) }}"
+rhel8stig_gui: false
 
 # Whether or not you need kdump. False will disable service and true will leave service
 rhel8stig_kdump_needed: false
@@ -519,7 +519,7 @@ rhel8stig_auto_mount_home_dirs_local_mount_point: "/home/"
 # The default shell command to gather local interactive user directories
 ## NOTE: You will need to adjust the UID range in parenthesis below.
 ## ALSO NOTE: We weed out any user with a home dir not in standard locations because interactive users shouldn't have those paths as a home dir. Add or removed directory paths as needed below.
-local_interactive_user_dir_command: "getent passwd { {{ rhel8stig_int_gid }}..65535} | grep -v '/sbin/nologin' | cut -d: -f6 | sort -u | grep -Ev '/var/|/nonexistent/|/run/*'"
+local_interactive_user_dir_command: "getent passwd {1000..65535} | grep -v '/sbin/nologin' | cut -d: -f6 | sort -u | grep -Ev '/var/|/nonexistent/|/run/*'"
 
 # IPv6 required
 rhel8stig_ipv6_required: true
@@ -527,7 +527,7 @@ rhel8stig_ipv6_required: true
 # RHEL-08-010001
 # rhel8stig_av_sftw is the AV software package. When set to mcafee it enables the check for these packages
 # When set to anything other than mcafee it will skip this control assuming localized threat prevention management
-rhel8stig_av_sftw: mcafee
+rhel8stig_av_sftw: false
 
 # RHEL-08-010110 & 010130 & 010760 & 020190 & 020200 & 020231 & 020310 & 020351
 # rhel8stig_login_defs_file_perms
@@ -812,10 +812,10 @@ rhel8stig_login_defaults:
 
 # RHEL-08-030690 uncomment and set the value to a remote IP address that can receive audit logs
 # NOTE different protocol configs '@''=UDP '@@''=TCP '':omrelp:'=RELP
-rhel8stig_remotelog_server:
-    server: 10.10.10.10
-    port: 9999
-    protocol: '@@'
+# rhel8stig_remotelog_server:
+#    server: 10.10.10.10
+#    port: 9999
+#    protocol: '@@'
 
 # RHEL-08-030020
 rhel8stig_auditd_mail_acct: root
